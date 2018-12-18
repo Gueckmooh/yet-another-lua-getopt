@@ -74,7 +74,9 @@ local function getopt (optspec, arg)
         warn ("Wrong type of argument, optspec must be a table")
     end
 
-    apply (optspec, function (t) setmetatable (t, metaspec) end)
+    apply (optspec, function (t) if type (t) == 'table' then
+                   setmetatable (t, metaspec)
+                   end end)
     setmetatable (optspec, {__index = {
                                 get_option = get_option,
                                 error = deferror
