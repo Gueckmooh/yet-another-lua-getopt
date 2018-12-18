@@ -1,5 +1,3 @@
-local function defcback () end
-
 local function warn (t)
     if type (t) == 'table' then
         io.stderr:write (unpack(t) .. '\n')
@@ -11,6 +9,11 @@ end
 local function die (t)
     warn (t)
     os.exit (1)
+end
+
+local function defcback () end
+local function deferror (str)
+    die (string.format ("Error : undefined option %s", str))
 end
 
 local function apply (tab, func)
@@ -73,7 +76,8 @@ local function getopt (optspec, arg)
 
     apply (optspec, function (t) setmetatable (t, metaspec) end)
     setmetatable (optspec, {__index = {
-                                get_option = get_option
+                                get_option = get_option,
+                                error = deferror
     }})
 
     local argv = arg or _G.arg
@@ -89,6 +93,8 @@ local function getopt (optspec, arg)
         if opt == nil or not continue_parse then
             if value == '--' then
                 continue_parse = false
+            elseif value:match ("^(-).*") then
+                optspec.error (value)
             else
                 table.insert (result.noarg, value)
             end
