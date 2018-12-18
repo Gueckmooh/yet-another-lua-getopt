@@ -95,7 +95,7 @@ local function getopt (optspec, arg)
         if opt == nil or not continue_parse then
             if value == '--' then
                 continue_parse = false
-            elseif value:match ("^(-).*") then
+            elseif value:match ("^(-).*") and continue_parse then
                 optspec.error (value)
             else
                 table.insert (result.noarg, value)
